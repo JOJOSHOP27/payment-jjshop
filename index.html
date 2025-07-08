@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAYMENT BY JOJOSHOP</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #00b894;
+            --danger: #d63031;
+            --warning: #fdcb6e;
+            --info: #0984e3;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: url('https://files.catbox.moe/pphjdi.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 0;
+        }
+        
+        .payment-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+            transform: translateY(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .payment-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .payment-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .payment-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            right: -50%;
+            bottom: -50%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0.1) 0%,
+                rgba(255, 255, 255, 0) 50%,
+                rgba(255, 255, 255, 0.1) 100%
+            );
+            transform: rotate(30deg);
+            z-index: 0;
+        }
+        
+        .payment-header h2 {
+            font-weight: 600;
+            font-size: 1.8rem;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .payment-header .shop-name {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 5px;
+            display: block;
+            font-weight: 400;
+        }
+        
+        .payment-body {
+            padding: 30px;
+        }
+        
+        .payment-method {
+            margin-bottom: 25px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            background: white;
+        }
+        
+        .payment-method:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .method-header {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            cursor: pointer;
+            background: linear-gradient(to right, #f8f9fa, #e9ecef);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .method-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+        
+        .method-header:hover::before {
+            width: 8px;
+        }
+        
+        .method-header.active {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .method-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+            transition: transform 0.3s ease;
+        }
+        
+        .method-header:hover .method-icon {
+            transform: scale(1.1);
+        }
+        
+        .method-header.active .method-icon {
+            filter: brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+        
+        .method-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            flex-grow: 1;
+        }
+        
+        .method-arrow {
+            transition: transform 0.3s ease;
+        }
+        
+        .method-header.active .method-arrow {
+            transform: rotate(180deg);
+            color: white;
+        }
+        
+        .method-content {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+        
+        .method-content.active {
+            padding: 20px;
+            max-height: 500px;
+        }
+        
+        .payment-details {
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .payment-number {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 10px 0;
+            word-break: break-all;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .copy-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .copy-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .copy-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .copy-btn i {
+            margin-right: 8px;
+        }
+        
+        .qris-container {
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .qris-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .qris-image:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .instructions {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #555;
+            line-height: 1.5;
+            background: rgba(0, 0, 0, 0.02);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .instructions p {
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.02);
+        }
+        
+        @media (max-width: 576px) {
+            .payment-body {
+                padding: 20px;
+            }
+            
+            .payment-number {
+                font-size: 1rem;
+            }
+            
+            .method-header {
+                padding: 12px 15px;
+            }
+            
+            .method-icon {
+                width: 32px;
+                height: 32px;
+                margin-right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <div class="payment-header">
+            <h2>PAYMENT GATEWAY</h2>
+            <span class="shop-name">BY JOJOSHOP</span>
+        </div>
+        
+        <div class="payment-body">
+            <!-- DANA Payment Method -->
+            <div class="payment-method">
+                <div class="method-header" onclick="toggleMethod(this)">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_dana_blue.svg" alt="DANA" class="method-icon">
+                    <div class="method-title">DANA</div>
+                    <svg class="method-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="method-content">
+                    <p>Send payment to this DANA number:</p>
+                    <div class="payment-details">
+                        <div class="payment-number">087773616519</div>
+                        <button class="copy-btn" onclick="copyToClipboard('087773616519')">
+                            <i>📋</i> Copy Number
+                        </button>
+                    </div>
+                    <div class="instructions">
+                        <p><strong>How to pay:</strong></p>
+                        <ol>
+                            <li>Open DANA app on your phone</li>
+                            <li>Go to "Send Money"</li>
+                            <li>Enter the number above</li>
+                            <li>Enter the amount and complete payment</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- GOPAY Payment Method -->
+            <div class="payment-method">
+                <div class="method-header" onclick="toggleMethod(this)">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Gopay_logo.svg/1200px-Gopay_logo.svg.png" alt="GOPAY" class="method-icon">
+                    <div class="method-title">GOPAY</div>
+                    <svg class="method-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="method-content">
+                    <p>Send payment to this GOPAY number:</p>
+                    <div class="payment-details">
+                        <div class="payment-number">087773616519</div>
+                        <button class="copy-btn" onclick="copyToClipboard('087773616519')">
+                            <i>📋</i> Copy Number
+                        </button>
+                    </div>
+                    <div class="instructions">
+                        <p><strong>How to pay:</strong></p>
+                        <ol>
+                            <li>Open Gojek app on your phone</li>
+                            <li>Go to GOPAY section</li>
+                            <li>Select "Send Money"</li>
+                            <li>Enter the number above</li>
+                            <li>Enter the amount and complete payment</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- OVO Payment Method -->
+            <div class="payment-method">
+                <div class="method-header" onclick="toggleMethod(this)">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Logo_ovo_purple.svg/1200px-Logo_ovo_purple.svg.png" alt="OVO" class="method-icon">
+                    <div class="method-title">OVO</div>
+                    <svg class="method-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="method-content">
+                    <p>Send payment to this OVO number:</p>
+                    <div class="payment-details">
+                        <div class="payment-number">087773616519</div>
+                        <button class="copy-btn" onclick="copyToClipboard('087773616519')">
+                            <i>📋</i> Copy Number
+                        </button>
+                    </div>
+                    <div class="instructions">
+                        <p><strong>How to pay:</strong></p>
+                        <ol>
+                            <li>Open OVO app on your phone</li>
+                            <li>Go to "Transfer"</li>
+                            <li>Select "To OVO User"</li>
+                            <li>Enter the number above</li>
+                            <li>Enter the amount and complete payment</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- QRIS Payment Method -->
+            <div class="payment-method">
+                <div class="method-header" onclick="toggleMethod(this)">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png" alt="QRIS" class="method-icon">
+                    <div class="method-title">QRIS</div>
+                    <svg class="method-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="method-content">
+                    <p>Scan this QR code with your banking/mobile payment app:</p>
+                    <div class="qris-container">
+                        <img src="https://files.catbox.moe/booods.jpg" alt="QRIS Code" class="qris-image">
+                    </div>
+                    <div class="instructions">
+                        <p><strong>How to pay:</strong></p>
+                        <ol>
+                            <li>Open your banking/mobile payment app</li>
+                            <li>Select "Scan QR Code"</li>
+                            <li>Point your camera at the QR code above</li>
+                            <li>Enter the amount and complete payment</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>After payment, please send proof of payment to JOJOSHOP</p>
+        </div>
+    </div>
+
+    <script>
+        function toggleMethod(header) {
+            const content = header.nextElementSibling;
+            const isActive = header.classList.contains('active');
+            
+            // Close all other methods
+            document.querySelectorAll('.method-header').forEach(h => {
+                if (h !== header) {
+                    h.classList.remove('active');
+                    h.nextElementSibling.classList.remove('active');
+                }
+            });
+            
+            // Toggle current method
+            header.classList.toggle('active');
+            content.classList.toggle('active');
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard: ' + text);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Copied to clipboard: ' + text);
+            });
+        }
+        
+        // Open first method by default
+        document.querySelector('.method-header').click();
+    </script>
+</body>
+</html>
